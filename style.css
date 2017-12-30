@@ -69,6 +69,13 @@ section.dark small a {
 section.dark a {
     color: #829dbb;
 }
+section.dark a.btn.btn-primary {
+    color: white;
+}
+section.dark a.btn.btn-default {
+    color: #222;
+    border: 0;
+}
 
 #screencast {
     padding: 0;
