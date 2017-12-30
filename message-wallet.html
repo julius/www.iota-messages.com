@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+    <head>
+        <title>IOTA Messages</title>
+        <link rel="stylesheet" href="lib/bootstrap/css/iota-messages-theme.min.css">
+        <link rel="stylesheet" href="style.css">
+        <link href="https://fonts.googleapis.com/css?family=Maven+Pro:400,500,700" rel="stylesheet" />
+    </head>
+    <body>
+        <header>
+            <div class="container">
+                <div class="pull-right">
+                    <a href="index.html">Message Encoder/Decoder</a>
+                    <a href="message-wallet.html">Wallet with Messaging</a>
+                </div>
+            </div>
+        </header>
+        <section class="dark">
+            <div class="container">
+                <h1>IOTA Transaction Messages</h1>
+                <p class="subtitle">The messages within IOTA Transactions. Written in a "language" called Trytes.</p>
+                <form action="view.html" method="GET">
+                    <input type="text" class="form-control search" placeholder="IOTA Transaction Hash" name="tx" id="txSearch">
+                    <small style="display: block; padding: 0 20px; text-align:right;">
+                    Example: <a href="view.html?tx=MYWWELRTIQRBHU9INRLDAJIQ9KUXHNDMVEUDIEFKQAU9A9ZMXBSSWCV9HFSTLRXEOXXLNKAOYYAYZ9999">MYWWE..AYZ9999</a>
+                    </small>
+                </form>
+            </div>
+        </section>
+
+        <section class="light">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-7">
+                        <h2>Wallet with Messaging Support</h2>
+                    </div>
+                    <div class="col-xs-12 col-sm-5 text-right">
+                        <a href="https://github.com/julius" class="btn btn-primary">Download Messaging Wallet</a>
+                        <br><br>
+                    </div>
+                </div>
+
+                <p>
+                    The default IOTA Wallet with exactly 2 changes:
+                    <ul>
+                        <li>Support for messages</li>
+                        <li>Allow 0i messages (you don't need to buy IOTA to play with this!)</li>
+                    </ul>
+                </p>
+            </div>
+        </section>
+
+        <section class="light-gray">
+            <div class="container">
+                <h2>Demo</h2>
+                <div id="screencast">
+                    <img src="screencast-wallet.gif" class="img-responsive">
+                </div>
+            </div>
+
+            <div class="space160"></div>
+        </section>
+
+        <section class="dark">
+            <div class="container">
+                <h2>About iota-messages.com</h2>
+
+                <p>
+                    This website helps you send your own messages. And translate other messages back into plain text.
+                    <br>
+                    Every transaction on the IOTA Tangle has an optional Message. Written in a "language" called Trytes.
+                </p>
+                <p>
+                    IOTAs <a href="https://github.com/iotaledger/wallet">default wallet</a> does not support messages. It also has 0i (no money) transactions disabled.
+                </p>
+                <p>
+                    Use the <a href="message-wallet.html">Wallet with Messaging</a> to send free transactions and attach messages to any transaction.
+                    <br>
+                    Try IOTA before buying any IOTA-Currency.
+                </p>
+
+                <p>
+                    <br><br>
+                    <small>
+                        Disclaimer: This website is not affiliated with the IOTA Foundation, the core developer team, or anything like that. Just <a href="https://github.com/julius">some guy</a>, who thought this might be helpful.
+                    </small>
+                </p>
+            </div>
+        </section>
+    </body>
+</html>

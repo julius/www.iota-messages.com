@@ -1,0 +1,170 @@
+<!doctype html>
+<html>
+    <head>
+        <title>IOTA Messages</title>
+        <link rel="stylesheet" href="lib/bootstrap/css/iota-messages-theme.min.css">
+        <link rel="stylesheet" href="style.css">
+        <link href="https://fonts.googleapis.com/css?family=Maven+Pro:400,500,700" rel="stylesheet" />
+    </head>
+    <body>
+        <header>
+            <div class="container">
+                <div class="pull-right">
+                    <a href="index.html">Message Encoder/Decoder</a>
+                    <a href="message-wallet.html">Wallet with Messaging</a>
+                </div>
+            </div>
+        </header>
+        <section class="dark">
+            <div class="container">
+                <h1>IOTA Transaction Messages</h1>
+                <p class="subtitle">The messages within IOTA Transactions. Written in a "language" called Trytes.</p>
+                <form action="view.html" method="GET">
+                    <input type="text" class="form-control search" placeholder="IOTA Transaction Hash" name="tx" id="txSearch">
+                    <small style="display: block; padding: 0 20px; text-align:right;">
+                    Example: <a href="view.html?tx=MYWWELRTIQRBHU9INRLDAJIQ9KUXHNDMVEUDIEFKQAU9A9ZMXBSSWCV9HFSTLRXEOXXLNKAOYYAYZ9999">MYWWE..AYZ9999</a>
+                    </small>
+                </form>
+            </div>
+        </section>
+
+        <section class="light">
+            <div class="container">
+                <div class="text-muted" style="text-align: left">
+                    Transaction
+                    <br>
+                    <span id="txhash" style="word-break: break-all;"></span>
+                    <br>
+                    <br>
+                </div>
+
+                <div id="stepLoading" style="display:block">
+                    <div class="loader">Loading...</div>
+                    <br><br>
+                </div>
+
+                <div id="stepMessage" style="display:none">
+                    <label>Message in plain text</label>
+                    <div class="panel panel-default">
+                        <div class="panel-body" style="font-size: 20px;">
+                            <div id="msgNoPlainText" class="text-danger">[This message may be a signature or something encrypted]</div>
+                            <div id="msgEmpty" class="text-danger">[No Message inside this particular transaction]</div>
+                            <div id="msgPlainText"></div>
+                        </div>
+                    </div>
+
+                    <label>TX-Message in Trytes</label>
+                    <div class="panel panel-default">
+                        <div class="panel-body" id="msgTrytes" style="word-break: break-all; font-size: 9px;">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="stepError" style="display:none" class="alert alert-danger">
+                    Error loading that transaction.
+                </div>
+
+                <a href="#" id="btnIotaSearch" target="_blank" class="btn btn-primary">Show Transaction on iotasear.ch</a>
+            </div>
+
+            <div class="space160"></div>
+        </section>
+
+        <section class="dark">
+            <div class="container">
+                <h2>About iota-messages.com</h2>
+
+                <p>
+                    This website helps you send your own messages. And translate other messages back into plain text.
+                    <br>
+                    Every transaction on the IOTA Tangle has an optional Message. Written in a "language" called Trytes.
+                </p>
+                <p>
+                    IOTAs <a href="https://github.com/iotaledger/wallet">default wallet</a> does not support messages. It also has 0i (no money) transactions disabled.
+                </p>
+                <p>
+                    Use the <a href="message-wallet.html">Wallet with Messaging</a> to send free transactions and attach messages to any transaction.
+                    <br>
+                    Try IOTA before buying any IOTA-Currency.
+                </p>
+
+                <p>
+                    <br><br>
+                    <small>
+                        Disclaimer: This website is not affiliated with the IOTA Foundation, the core developer team, or anything like that. Just <a href="https://github.com/julius">some guy</a>, who thought this might be helpful.
+                    </small>
+                </p>
+            </div>
+        </section>
+
+        <script src="lib/jquery-3.2.1.min.js"></script>
+        <script src="lib/lodash.min.js"></script>
+        <script src="lib/bootstrap/js/bootstrap.min.js"></script>
+        <script src="lib/iota.js"></script>
+        <script src="lib/iota-loader.js"></script>
+        <script>
+            var iotaUtils = new IOTA().utils;
+            var iotaValid = new IOTA().valid;
+            
+
+            function showError(msg) {
+                $("#error").text(msg).show();
+            }
+            function getUrlVars() {
+                var vars = {};
+                var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,    
+                    function(m,key,value) {
+                        vars[key] = value;
+                    });
+                return vars;
+            }
+
+            var txHash = getUrlVars().tx;
+            jQuery("#txhash").text(txHash);
+            jQuery("#txSearch").val(txHash);
+            jQuery("#btnIotaSearch").attr("href", "https://iotasear.ch/transaction/" + txHash);
+
+            iotaLoader.getTransactionsObjects([txHash], function (err, txs) {
+                if (err) {
+                    console.error(err);
+                    jQuery("#stepLoading").hide();
+                    jQuery("#stepError").show();
+                    return;
+                }
+                console.log("TXS", txs);
+                
+                var msgTrytes = txs[0].signatureMessageFragment;
+                jQuery("#msgTrytes").text(msgTrytes);
+
+                var msgPlain = decodeMessage(msgTrytes);
+                if (msgPlain) {
+                    jQuery("#msgEmpty").hide();
+                } else {
+                    jQuery("#msgEmpty").show();
+                }
+                if (isMessageNoPlainText(msgPlain)) {
+                    jQuery("#msgNoPlainText").show();
+                } else {
+                    jQuery("#msgNoPlainText").hide();
+                }
+                jQuery("#msgPlainText").text(msgPlain);
+                jQuery("#msgPlainText").html(jQuery("#msgPlainText").html().replace(/\n/g, "<br>"))
+
+                jQuery("#stepLoading").hide();
+                jQuery("#stepMessage").show();
+            });
+
+            function isMessageNoPlainText(msg) {
+                return /[\x00-\x08\x0E-\x1F\x80-\xFF]/.test(msg)
+            }
+
+            function decodeMessage(trytes) {
+                if (trytes.length % 2 !== 0) {
+                    trytes = trytes + "9";
+                }
+                return _.trim(iotaUtils.fromTrytes(trytes).replace(/\0/g, ""));
+            }
+        
+        </script>
+    </body>
+</html>
